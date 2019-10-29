@@ -17,10 +17,10 @@ COMPLETE_RATIO=$(echo "scale=3;$COMPLETE/$ATTEMPT*100" | bc |cut -c 1-4);
 V_ATTEMPT=$(wc -l v_attempt.txt | awk '{print $1}' | sed -e 's/^*//g' -e 's/*$//g');
 V_COMPLETE=$(wc -l v_complete.txt | awk '{print $1}' | sed -e 's/^*//g' -e 's/*$//g');
 V_COMPLETE_RATIO=$(echo "scale=3;$V_COMPLETE/$V_ATTEMPT*100" |bc |cut -c 1-4)
-VIDEO_CODEC=$(cat complete.txt | awk '{print $5}' | sort |uniq -dc |sort -nr);
+VIDEO_CODEC=$(cat complete.txt | awk '{print $5}' | sort |uniq -c |sort -nr);
 #COMPLETE_RATIO=`expr "$COMPLETE" / "$ATTEMPT"`
-OutGoing_RTE=$(awk '{print $9}' v_complete.txt | sort |uniq -dc |sort -nr)
-InComing_RTE=$(awk '{print $10}' v_complete.txt | sort|uniq -dc |sort -nr)
+OutGoing_RTE=$(awk '{print $9}' v_complete.txt | sort |uniq -c |sort -nr)
+InComing_RTE=$(awk '{print $10}' v_complete.txt | sort|uniq -c |sort -nr)
 
 echo -n "$1"-"$2"-"$3" >>xx.txt
 echo  "( "$DATE")" >> xx.txt
@@ -29,16 +29,24 @@ printf "%10s\t%10s\t%10s\t%10s\t%10s\t%10s\t%10s\n"  "CODEC(COMPLETE)"		"ATTEMPT
 printf "%10s\t%10s\t%10s\t%10s\t%10s\t%10s\t%10s\n"  "$VIDEO_CODEC"	"$ATTEMPT"		"$COMPLETE"	 "$COMPLETE_RATIO %"		"$V_ATTEMPT"	"$V_COMPLETE"	"$V_COMPLETE_RATIO %"	   	>>xx.txt	
 printf "\n" >>xx.txt
 printf "\n" >>xx.txt
-printf "%5s\t%20s\t\t%20s\t%20s\n"		"V_COUNT"	"V_OutGoing RTE"		"V_COUNT"	"V_InComing RTE" >>xx.txt
-printf "%5s\t%20s\t\t%20s\t%20s\n"	    $OutGoing_RTE				$InComing_RTE	>>xx.txt	
+printf "%5s\t%20s\n"		"V_COUNT"	"V_OutGoing RTE"  >>xx.txt
+printf "%5s\t%20s\n"					$OutGoing_RTE    >>xx.txt
+printf "\n" >>xx.txt
+printf "\n" >>xx.txt
+printf "%5s\t%20s\n"		"V_COUNT"	"V_InComing RTE" >>xx.txt
+printf "%5s\t%20s\n"	   				$InComing_RTE	>>xx.txt	
 
-OutGoing_DEVICE=$(awk '{print $11}' v_complete.txt | sort | uniq -dc |sort -nr|head -n10)
-InComing_DEVICE=$(awk '{print $12}' v_complete.txt | sort | uniq -dc |sort -nr|head -n10)
+OutGoing_DEVICE=$(awk '{print $11}' v_complete.txt | sort | uniq -c |sort -nr|head -n10)
+InComing_DEVICE=$(awk '{print $12}' v_complete.txt | sort | uniq -c |sort -nr|head -n10)
 
 printf "\n" >>xx.txt
 printf "\n" >>xx.txt
-printf "%5s\t%20s\t\t%20s\t%20s\n"		"V_COUNT"	"V_OutGing DEVICE Top 10"		"V_COUNT"		"V_InComng DEVICE Top 10" >>xx.txt
-printf "%5s\t%20s\t\t%20s\t%20s\n"		$OutGoing_DEVICE					$InComing_DEVICE >>xx.txt
+printf "%5s\t%20s\n"		"V_COUNT"	"V_OutGing DEVICE Top 10"  >>xx.txt
+printf "%5s\t%20s\n"					$OutGoing_DEVICE  >>xx.txt
+printf "\n" >> xx.txt
+printf "\n" >> xx.txt
+printf "%5s\t%20s\n"		"V_COUNT"		"V_InComng DEVICE Top 10"  >>xx.txt
+printf "%5s\t%20s\n"							$InComing_DEVICE >>xx.txt
 echo -e "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n" >>xx.txt
 echo -e "\n" >>xx.txt
 cat xx.txt >>./video_codec/traffic.log
